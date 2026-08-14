@@ -1,47 +1,35 @@
 import json
 import os
-from PIL import Image
-from io import BytesIO
-import base64
 
-# Verificar si el archivo existe y tiene contenido
-def inicializar_archivo_json():
-    if not os.path.exists('productos.json') or os.path.getsize('productos.json') == 0:
-        with open('productos.json', 'w') as file:
-            file.write('[]')
-
-# Leer productos desde un archivo JSON
-def leer_productos():
-    inicializar_archivo_json()
-    with open('productos.json', 'r') as file:
-        return json.load(file)
-
-# Guardar productos en un archivo JSON
-def guardar_productos(productos):
-    with open('productos.json', 'w') as file:
-        json.dump(productos, file, indent=4)
-
-# Añadir un nuevo producto
-def añadir_producto(nombre, foto, precio):
-    productos = leer_productos()
-    # Convertir la imagen a bytes y codificar en base64
-    with Image.open(foto) as imagen:
-        image_byte_array = BytesIO()
-        imagen.convert('RGB').save(image_byte_array, format='JPEG')
-        foto_bytes = base64.b64encode(image_byte_array.getvalue()).decode('utf-8')
-    productos.append({"nombre": nombre, "foto": foto_bytes, "precio": precio})
-    guardar_productos(productos)
-
-def borrar_producto(nombre):
-    productos = leer_productos()
-    productos = [producto for producto in productos if producto["nombre"] != nombre]
-    guardar_productos(productos)
-
-def contar_productos():
-    productos = leer_productos()
-    return len(productos)
-
-
-
-print(contar_productos())
-inicializar_archivo_json()
+def agregar_trabajo(message):
+    try:
+        lineas = [l.split(". ", 1)[-1].strip() for l in message.text.strip().split('\n')]            
+        trabajo = {
+                    "cliente": lineas[0],
+                    "direccion": lineas[1],
+                    "fecha": lineas[2],
+                    "contacto": lineas[3],
+                    "encargados": [e.strip() for e in lineas[4].split(",")]
+                }       
+        archivo = "trabajos.json"
+        datos = []
+        if os.path.exists(archivo):
+            with open(archivo, 'r', encoding='utf-8') as f:
+                try:
+                    contenido = json.load(f)
+                    # AQUÍ ESTÁ EL TRUCO:
+                    if isinstance(contenido, list):
+                        datos = contenido
+                    else:
+                        # Si era un diccionario, lo metemos dentro de una lista nueva
+                        datos = [contenido]
+                except json.JSONDecodeError:
+                    datos = []
+        
+        datos.append(trabajo)
+        with open(archivo, 'w', encoding='utf-8') as f:
+            json.dump(datos, f, indent=4, ensure_ascii=False)
+        return True    
+    except Exception as e:
+        print(f"Error al escribir: {e}")
+        return False

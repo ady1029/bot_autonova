@@ -1,3 +1,24 @@
-{
-    
-}
+[
+    {
+        "cliente": "Café Central",
+        "direccion": "Calle Falsa 123",
+        "fecha": "25 de Octubre",
+        "contacto": "600-123-456",
+        "encargados": [
+            "Ana",
+            "Carlos",
+            "Elena"
+        ]
+    },
+    {
+        "cliente": "Café Central",
+        "direccion": "Calle Falsa 123",
+        "fecha": "25 de Octubre",
+        "contacto": "600-123-456",
+        "encargados": [
+            "Ana",
+            "Carlos",
+            "Elena"
+        ]
+    }
+]
